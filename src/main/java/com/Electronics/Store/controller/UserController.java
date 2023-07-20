@@ -34,7 +34,7 @@ public class UserController {
      @apiNote create User
    */
     @PostMapping("/")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
 
         String methodName = "createUser()";
         logger.info(methodName+"Called");
@@ -53,7 +53,7 @@ public class UserController {
    */
     @PutMapping("/{userId}")
 
-    public ResponseEntity<UserDto> updateUse(@PathVariable String userId,@RequestBody UserDto userDto ){
+    public ResponseEntity<UserDto> updateUse(@Valid @PathVariable String userId,@RequestBody UserDto userDto ){
 
         UserDto updateUser=userService.updateUser(userDto, userId);
 
