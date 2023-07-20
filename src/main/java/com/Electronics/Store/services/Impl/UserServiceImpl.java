@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
-       logger.info("Sending request to repository for updating user: {} with ID: {}", userDto.userDto.getName(), userId);
+       logger.info("Sending request to repository for updating user: {} with ID:{}",userId);
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.USER_NOT_FOUND + userId));
 
         user.setName(userDto.getName());
@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
 
 
     private User dtoToEntity(UserDto userDto) {
-        User user=User.builder()
+        /*User user=User.builder()
                 .userId(userDto.getUserId())
                 .name(userDto.getName())
                 .email(userDto.getEmail())
@@ -126,22 +126,24 @@ public class UserServiceImpl implements UserService {
                 .about(userDto.getAbout())
                 .gender(userDto.getGender())
                 .imageName(userDto.getImageName())
-                .build();
+                .build();*/
 
-        return user;
+        return mapper.map(userDto, User.class);
+
 
     }
 
     private UserDto entityToDto(User saveUser){
-        UserDto userDto=UserDto.builder()
+        /*UserDto userDto=UserDto.builder()
                 .userId(saveUser.getUserId())
                 .name(saveUser.getName())
                 .Email(saveUser.getEmail())
                 .password(saveUser.getEmail())
                 .about(saveUser.getAbout())
                 .gender(saveUser.getGender())
-                .imageName(saveUser.getImageName()).build();
-        return userDto;
+                .imageName(saveUser.getImageName()).build();*/
+        return mapper.map(saveUser, UserDto.class);
+        //                  source    Destination
     }
 
 }

@@ -27,6 +27,12 @@ public class UserController {
     private Logger logger = GlobalResource.getLogger(UserController.class);
 
     //create
+   /*
+     @param userDto
+     @return ResponseEntity<UserDto>
+     @auther Md Jishan
+     @apiNote create User
+   */
     @PostMapping("/")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto){
 
@@ -37,10 +43,14 @@ public class UserController {
 
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
-
-
     //update
-
+    /*
+     @param userDto
+     @param userId
+     @return ResponseEntity<UserDto>V8
+     @auther Md Jishan
+     @apiNote upadte User
+   */
     @PutMapping("/{userId}")
 
     public ResponseEntity<UserDto> updateUse(@PathVariable String userId,@RequestBody UserDto userDto ){
@@ -49,8 +59,13 @@ public class UserController {
 
         return new ResponseEntity<>(updateUser, HttpStatus.OK);
     }
-
     //delete
+    /*
+     @param userId
+     @return ResponseEntity<String>
+     @auther Md Jishan
+     @apiNote delete user with given Id
+   */
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable String userId){
 
@@ -59,8 +74,12 @@ public class UserController {
         return new ResponseEntity<>(new ApiResponse(AppConstants.DELETE_USER, true),HttpStatus.OK);
 
     }
-
     //get all
+    /*
+     @return ResponseEntity<UserDto>
+     @auther Md Jishan
+     @apiNote get all Users
+   */
     @GetMapping("/getAll")
     public ResponseEntity<List<UserDto>>getAllUsers(){
 
@@ -68,8 +87,36 @@ public class UserController {
 
         return new ResponseEntity<>(allUser,HttpStatus.OK);
     }
+    //get single Id
+    /*
+     @param userId
+     @return ResponseEntity<UserDto>
+     @auther Md Jishan
+     @apiNote get user by Id
+   */
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDto> getUser(@PathVariable String userId) {
+        logger.info("sending request to service for retrieving with user with Id: {}", userId);
+        UserDto user=userService.getUserById(userId);
+        logger.info("successfully retrieved user: {}", user);
+        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
+    }
+    //get by email
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserDto> getUserEmail(@PathVariable String email) {
+        logger.info("sending request to service for retrieving with user with Id: {}");
+        UserDto user = userService.getUserByEmail(email);
+        logger.info("successfully retrieved user: {}", user);
+        return new ResponseEntity<>(userService.getUserByEmail(email), HttpStatus.OK);
+    }
 
 
+        //get by search
+        @GetMapping("/search/{keywords}")
+        public ResponseEntity<List<UserDto>> searchUser(@PathVariable String keywords){
+
+            return new ResponseEntity<List<UserDto>>(userService.searchUser(keywords), HttpStatus.OK);
+        }
 
 
-}
+    }

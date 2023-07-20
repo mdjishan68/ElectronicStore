@@ -13,12 +13,11 @@ import javax.validation.constraints.NotNull;
 public class UserDto {
 
 
-    public ConstantDynamic userDto;
     private String userId;
 
     private String name;
 
-    private String Email;
+    private String email;
 
     private String password;
 
