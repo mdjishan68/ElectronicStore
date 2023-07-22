@@ -5,6 +5,7 @@ import com.Electronics.Store.dtos.PageableResponse;
 import com.Electronics.Store.dtos.UserDto;
 import com.Electronics.Store.entities.User;
 import com.Electronics.Store.exception.ResourceNotFoundException;
+import com.Electronics.Store.helper.Helper;
 import com.Electronics.Store.repositories.UserRepository;
 import com.Electronics.Store.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -97,17 +98,7 @@ public class UserServiceImpl implements UserService {
 
         Page<User> page = userRepository.findAll(pageable);
 
-        List<User> users = page.getContent();
-
-        List<UserDto> dtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
-
-        PageableResponse<UserDto> response = new PageableResponse<>();
-        response.setContent(dtoList);
-        response.setPageNumber(page.getNumber());
-        response.setPageSize(page.getSize());
-        response.setTotalElements(page.getTotalElements());
-        response.setTotalPage(page.getTotalPages());
-        response.setLastPage(page.isLast());
+        PageableResponse<UserDto> response =Helper.getPageableResponse(page, UserDto.class);
 
         return response;
     }
