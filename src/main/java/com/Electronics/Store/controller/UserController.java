@@ -3,18 +3,29 @@ package com.Electronics.Store.controller;
 import com.Electronics.Store.Config.AppConstants;
 import com.Electronics.Store.Config.GlobalResource;
 import com.Electronics.Store.dtos.ApiResponse;
+import com.Electronics.Store.dtos.ImageResponse;
 import com.Electronics.Store.dtos.PageableResponse;
 import com.Electronics.Store.dtos.UserDto;
+import com.Electronics.Store.services.ServiceFile;
 import com.Electronics.Store.services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -24,6 +35,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ServiceFile serviceFile;
+
+    @Value("${user.profile.image.path}")
+    private String imageUploadPath;
 
     private Logger logger = GlobalResource.getLogger(UserController.class);
 
@@ -81,7 +98,7 @@ public class UserController {
      @auther Md Jishan
      @apiNote get all Users
    */
-    @GetMapping("/getAll")
+    @GetMapping("/")
     public ResponseEntity<PageableResponse<UserDto>>getAllUsers(
 
             @RequestParam(value = "pageNumber",defaultValue = "0",required = false) int pageNumber,
@@ -105,7 +122,7 @@ public class UserController {
         logger.info("sending request to service for retrieving with user with Id: {}", userId);
         UserDto user=userService.getUserById(userId);
         logger.info("successfully retrieved user: {}", user);
-        return new ResponseEntity<UserDto>(user, HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
     //get by email
     @GetMapping("/email/{email}")
@@ -123,6 +140,35 @@ public class UserController {
 
             return new ResponseEntity<List<UserDto>>(userService.searchUser(keywords), HttpStatus.OK);
         }
+        //upload user image
+    @PostMapping("/image/{userId}")
+    public ResponseEntity<ImageResponse> uploadUserImage(@RequestParam("userImage") MultipartFile image, @PathVariable String userId) throws IOException {
 
+       String imageName = serviceFile.uploadFile(image,imageUploadPath);
+        UserDto user = userService.getUserById(userId);
+        user.setImageName(imageName);
+        UserDto userDto = userService.updateUser(user, userId);
+
+
+        ImageResponse imageResponse = ImageResponse.builder().message("image uploaded successfully !!").imageName(imageName).success(true).status(HttpStatus.CREATED).build();
+       return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
+
+
+    }
+        //server user image
+    @GetMapping("/image/{userId}")
+    public void serveUserImage(@PathVariable String userId, HttpServletResponse response) throws IOException {
+
+        UserDto user = userService.getUserById(userId);
+
+        InputStream resource = serviceFile.getResource(imageUploadPath, user.getImageName());
+
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+
+        StreamUtils.copy(resource, response.getOutputStream());
+
+
+
+    }
 
     }
