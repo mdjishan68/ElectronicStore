@@ -3,19 +3,20 @@ package com.Electronics.Store.services.Impl;
 
 import com.Electronics.Store.exception.BadApiRequest;
 import com.Electronics.Store.services.ServiceFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
 public class ServiceFileImpl implements ServiceFile {
+
+    public static Logger logger = LoggerFactory.getLogger(ServiceFileImpl.class);
 
 
     @Override
@@ -47,6 +48,11 @@ public class ServiceFileImpl implements ServiceFile {
 
     @Override
     public InputStream getResource(String path, String name) throws FileNotFoundException {
-        return null;
+
+        logger.info("initializing request for getResource : {}",path);
+        String fullPath=path+ File.separator+name;
+        InputStream inputStream= new FileInputStream(fullPath);
+        logger.info("request completed for getResource : {}",inputStream);
+        return inputStream;
     }
 }
